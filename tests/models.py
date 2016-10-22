@@ -21,3 +21,10 @@ class Tag(models.Model):
 class Author(models.Model):
 	name = models.CharField(max_length=1024)
 	dateOfBirth = models.DateField()
+
+class Main(models.Model):
+	name = models.CharField(max_length=1024)
+	rel = models.ForeignKey('Sub', blank=True)
+
+class Sub(models.Model):
+	name = models.CharField(max_length=1024)

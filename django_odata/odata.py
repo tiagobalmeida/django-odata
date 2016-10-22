@@ -3,7 +3,7 @@ import re
 def odata_sort_direction_to_django(odata_orderby_criteria_tok):
 	"""
 	Given an odata orderby criteria, returns a string
-	with either '+' , '-' or '' as this is what django
+	with either '-' or '' as this is what django
 	expects to define the sorting direction.
 	
 	Example inputs:
@@ -13,9 +13,9 @@ def odata_sort_direction_to_django(odata_orderby_criteria_tok):
 	'Item/id asc'
 
 	The function returns based on the following logic
-	<path> 			-> ''
-	<path> asc 	-> '+'
-	<path> desc -> '-'
+	<path> 			-> ''<fieldname>
+	<path> asc 	-> ''<fieldname>
+	<path> desc -> '-'<fieldname>
 	"""
 	s = odata_orderby_criteria_tok
 	tokens = s.split(' ')
@@ -32,8 +32,12 @@ def odata_sort_direction_to_django(odata_orderby_criteria_tok):
 		pass # error - TODO
 
 
+def odata_sort_property_path_to_django(criteria):
+	return criteria.replace('/','__')
+
+
 def is_path_expression(s):
-	return True # TODO
+	return '/' in s
 
 
 def set_order_by(orm_queryset, odata_orderby):
@@ -69,9 +73,24 @@ def set_order_by(orm_queryset, odata_orderby):
 			# - A path for subobjects ( e.g.: Author/name )
 			# It can also optionally end with 'asc' or 'desc'
 			if is_path_expression(criteria):
-				pass
+				criteria = odata_sort_property_path_to_django(criteria)
 				#TODO - convert to path in django's terms
 			django_orderby = odata_sort_direction_to_django(criteria)
 			django_order_tuple += (django_orderby,) 
 		return result.order_by(*django_order_tuple)
 	return result
+
+
+def set_filter(orm_queryset, odata_filter):
+	"""
+	Takes a django ORM query and applies filtering.
+	
+	Filter examples:
+	------------------
+	http://example.com/OData/OData.svc/Products?$filter=Rating eq 2
+		All Product Entries that have a Rating == 2
+
+	Available comparison operators: eq, ne, gt, lt, le, ge, ?
+	"""
+	regex = re.compile('[a-zA-Z0-9_/]\s(eq|ne|gt|lt|ge|le)[a-zA-Z0-9_/]')
+
