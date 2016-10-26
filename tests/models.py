@@ -1,6 +1,6 @@
 # ============================================================
 # Models needed to test the django-odata reusable app
-#
+# 
 # (C) Tiago Almeida 2016
 #
 # 
@@ -28,3 +28,6 @@ class Main(models.Model):
 
 class Sub(models.Model):
 	name = models.CharField(max_length=1024)
+
+class Number(models.Model):
+	value = models.IntegerField()
