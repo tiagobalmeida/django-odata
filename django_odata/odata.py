@@ -1,3 +1,11 @@
+# ============================================================
+# Core functions for odata handling
+#
+# (C) Tiago Almeida 2016
+#
+# 
+#
+# ============================================================
 import re
 
 # TODO:
@@ -108,7 +116,8 @@ def odata_filter_operator_to_django(odata_operator):
 		'lt':'lt',
 		'ge':'gte',
 		'le':'lte',
-		'eq':''
+		'eq':'',
+		'ne':''
 	}
 	return mapping[odata_operator]
 
@@ -123,6 +132,10 @@ def set_filter(orm_queryset, odata_filter):
 		All Product Entries that have a Rating == 2
 
 	Available comparison operators: eq, ne, gt, lt, le, ge, ?
+	
+	We use the following abbreviations for this function:
+	od -> OData
+	dj -> Django
 
 	# TODO: This function is messy and lots of scenarios are missing
 	"""
@@ -131,12 +144,13 @@ def set_filter(orm_queryset, odata_filter):
 		pass # TODO
 		return
 	dj_filter_params = {}
-	dj_operator = odata_filter_operator_to_django(
-		parsed_od_filter.group('op')
-	)
+	od_operator = parsed_od_filter.group('op')
+	dj_operator = odata_filter_operator_to_django(od_operator)
 	dj_param = parsed_od_filter.group('path') 
 	if dj_operator:
 		dj_param = dj_param + '__' + dj_operator
 	dj_filter_params[dj_param] = parsed_od_filter.group('val')	
+	if od_operator == 'ne': # TODO
+		return orm_queryset.exclude(**dj_filter_params) 
 	return orm_queryset.filter(**dj_filter_params)
  

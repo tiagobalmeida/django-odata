@@ -1,3 +1,11 @@
+# ============================================================
+# OData requests handling
+#
+# (C) Tiago Almeida 2016
+#
+# 
+#
+# ============================================================
 import re
 import json
 from django.apps import apps
@@ -8,7 +16,7 @@ from django.template.response import TemplateResponse
 from django.urls import reverse
 from django.core.serializers.python import Serializer
 from django.core.serializers.json import DjangoJSONEncoder
-
+from .odata import *
 
 class OdataJsonSerializer(Serializer):
 	def __init__(self, service_root, set_name):
@@ -62,29 +70,28 @@ def get_set(request, set_name):
 	Returns a set of objects.
 	For help on what this should comply with, read:
 	http://www.odata.org/documentation/odata-version-2-0/uri-conventions/
-	
-	
-
 	"""
 	# System Query Options
-	q_order_by = request.GET.get('$order_by', False)
+	q_order_by  = request.GET.get('$order_by', False)
+	q_filter_by = request.GET.get('$filter', False)
 	EntityModel = apps.get_model('webapp', set_name)
 	query_result = EntityModel.objects.all()
+	if q_filter_by:
+		query_result = set_filter(query_result, q_filter_by)
 	if q_order_by:
 		query_result = _order_by(query_result, q_order_by)
-		
 	service_root = reverse('odata_service_root')
 	s = OdataJsonSerializer(service_root, set_name)
 	#return HttpResponse(s.serialize(response_obj))
-	return HttpResponse(s.serialize(EntityModel.objects.all()),
+	return HttpResponse(s.serialize(query_result),
 		content_type="application/json")
 
 
 def handle(request, odata_path):
 	return get_set(request, odata_path)
 	# take odata_path split by /
-	components = odata_path.split('/')
-	odata_filter = request.GET.get('$filter', None)
+	# components = odata_path.split('/')
+	# odata_filter = request.GET.get('$filter', None)
 	# is this a query for an entity?
 	if re.search('\w+\(.*\)', components[0]):
 		entity_query = components[0] 
