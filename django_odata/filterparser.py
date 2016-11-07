@@ -15,22 +15,21 @@ import unittest
 # Lexer rules
 # ============================================================
 reserved = {
-   #'and': 'AND'
+   'and': 'AND',
+   'or'	: 'OR',
+   'eq'	: 'EQ',
+   'ne'	: 'NE',
+   'gt'	: 'GT',
+   'ge'	: 'GE',
+   'lt' : 'LT',
+   'le' : 'LE',
+   'startswith' : 'STARTSWITH',
 }
 
 
 # List of token names.
 tokens = (
 	'NUMBER',
-	'EQ',
-	'NE',
-	'GT',
-	'GE',
-	'LT',
-	'LE',
-	'STARTSWITH',
-	'AND',
-	'OR',
 	'LPAREN',
 	'RPAREN',
 	'ID'
@@ -38,27 +37,21 @@ tokens = (
 
 
 # Regular expression rules for simple tokens
-t_EQ			= 'eq'
-t_NE			= r'ne'
-t_GT			= r'gt'
-t_GE			= r'gt'
-t_LT			= r'lt'
-t_LE 			= r'le'
 t_LPAREN 	= r'\('
 t_RPAREN 	= r'\)'
-t_ID			= r'[a-zA-Z_][a-zA-Z0-9_]*'
 t_ignore = " \t" # ignored characters (spaces and tabs)
-t_STARTSWITH = r'startswith'
-
-def t_OR(t):
-	'or'
-	return {}
 
 
 def t_NUMBER(t):
 	r'\d+'
 	t.value = int(t.value)    
 	return t
+
+
+def t_ID(t):
+	r'[a-zA-Z_][a-zA-Z0-9_]*'
+	t.type = reserved.get(t.value, 'ID')
+	return t 
 
 
 def t_error(t):
@@ -78,6 +71,7 @@ precedence = (
 
 
 def debug_print(str):
+	return None
 	print(str)
 
 
@@ -87,8 +81,15 @@ def p_filter(t):
 	t[0] = t[1]
 
 
+def p_value(t):
+	"""value 	: NUMBER 
+						| ID
+	"""
+	t[0] = {}
+
+
 def p_constraint(t):
-	'constraint : ID NUMBER'
+	'constraint : ID operator value'
 	debug_print('p_constraint')
 	t[0] = {}
 
@@ -139,9 +140,30 @@ def parse(filter_expression):
 
 class TestCase(unittest.TestCase):
 	def test1(self):
-		parse('teste 1 or test 3')
+		parse('test eq 1 or test eq 3')
+	
+	def test2(self):	
+		parse('test ne 2')
+	
+	def test3(self):
+		parse('test lt 3')
+	
+	def test4(self):
+		parse('test le 4')
+	
+	def test5(self):
+		parse('test ge 5')
+	
+	def test6(self):
+		parse('test gt 6')
+	
+	def test7(self):
+		parse('test1 gt 6 and ( test2 ne 7 or test3 eq 8 )')
 		#self.assertEqual((1 + 2), 3)
 		#self.assertEqual(0 + 1, 1)
+	
+	def test8(self):
+		parse('test1 gt test2 and ( test2 ne 7 or test3 eq 8 )')
 
 if __name__ == '__main__':
 	unittest.main()
