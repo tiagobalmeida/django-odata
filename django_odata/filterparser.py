@@ -4,7 +4,13 @@
 # (C) Tiago Almeida 2016
 #
 # This module uses PLY (http://www.dabeaz.com/ply/ply.html)
-# and a set of grammar rules to parse odata $filter's value
+# and a set of grammar rules to parse odata $filter's value.
+# The main function is called parse and it returns a
+# tree ... TODO
+#
+# TODO:
+# IDs can take slashes ( / ) as subobject paths.
+# 
 # ============================================================
 
 import ply.lex as lex
