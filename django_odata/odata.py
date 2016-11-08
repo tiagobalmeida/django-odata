@@ -7,6 +7,8 @@
 #
 # ============================================================
 import re
+import django_odata.filterparser as filterparser
+
 
 # TODO:
 # $filter supports ands/ors and parenthesis
@@ -108,21 +110,23 @@ def odata_filter_parse(odata_filter):
 	return regex.match(odata_filter)
 
 
+
+
 def odata_filter_operator_to_django(odata_operator):
 	# TODO 'startswidth', contains, iexact,endswidth,
 	# notequal
 	mapping = {
-		'gt':'gt',
-		'lt':'lt',
-		'ge':'gte',
-		'le':'lte',
-		'eq':'',
-		'ne':''
+		'GT':'gt',
+		'LT':'lt',
+		'GE':'gte',
+		'LE':'lte',
+		'EQ':'',
+		'NE':''
 	}
 	return mapping[odata_operator]
 
 
-def set_filter(orm_queryset, odata_filter):
+def set_filter1(orm_queryset, odata_filter):
 	"""
 	Takes a django ORM query and applies filtering.
 	
@@ -154,3 +158,65 @@ def set_filter(orm_queryset, odata_filter):
 		return orm_queryset.exclude(**dj_filter_params) 
 	return orm_queryset.filter(**dj_filter_params)
  
+
+
+def _parsed_filter_to_django(filter_ast):
+	"""
+	Gets an instance of filterparser.Constraint
+	or filterparser.BinaryOperator, which can mean it is actually a
+	tree, representing the parsed	$filter expression and converts
+	to Q objects usable by Django. This is a recursive function
+	
+	ast -> Abstract syntax tree
+
+	"""
+	from django.db.models import Q
+
+	def transform_binary_op(operation):
+		if binary_operation.operator == filterparser.C_OPERATOR_AND:
+			return (_parsed_filter_to_django(operation.left) & 
+							_parsed_filter_to_django(operation.right))
+		if binary_operation.operator == filterparser.C_OPERATOR_OR:
+			return (_parsed_filter_to_django(operation.left) | 
+							_parsed_filter_to_django(operation.right))
+		return None
+
+	def transform_constraint(constraint):
+		Q_constructor_params = {}
+		Q_param = filter_ast.property # e.g: 'ChangedDate'
+		Q_operator = odata_filter_operator_to_django(filter_ast.operator)
+		if Q_operator:
+			Q_param = Q_param + '__' + Q_operator
+		Q_constructor_params[Q_param] = filter_ast.value
+		result = Q(**Q_constructor_params)
+		if filter_ast.operator == filterparser.C_OPERATOR_NE:
+			return ~result #(negate the result)
+		return result
+
+	if( isinstance(filter_ast, filterparser.Constraint) ):
+		return transform_constraint(filter_ast)
+	# for trees, call recursively
+	return transform_binary_op(filter_ast) 
+
+
+
+def set_filter(orm_queryset, odata_filter):
+	"""
+	Takes a django ORM query and applies filtering.
+	
+	Filter examples:
+	------------------
+	http://example.com/OData/OData.svc/Products?$filter=Rating eq 2
+		All Product Entries that have a Rating == 2
+
+	Available comparison operators: eq, ne, gt, lt, le, ge, ?
+	
+	We use the following abbreviations for this function:
+	od 	-> OData
+	dj 	-> Django
+	ast -> Abstract syntax tree
+	"""
+	filter_ast = filterparser.parse(odata_filter)
+	Q_expression = _parsed_filter_to_django(filter_ast)
+	return orm_queryset.filter(Q_expression)
+
