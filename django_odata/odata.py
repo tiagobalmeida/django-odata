@@ -173,10 +173,10 @@ def _parsed_filter_to_django(filter_ast):
 	from django.db.models import Q
 
 	def transform_binary_op(operation):
-		if binary_operation.operator == filterparser.C_OPERATOR_AND:
+		if operation.operator == filterparser.C_OPERATOR_AND:
 			return (_parsed_filter_to_django(operation.left) & 
 							_parsed_filter_to_django(operation.right))
-		if binary_operation.operator == filterparser.C_OPERATOR_OR:
+		if operation.operator == filterparser.C_OPERATOR_OR:
 			return (_parsed_filter_to_django(operation.left) | 
 							_parsed_filter_to_django(operation.right))
 		return None

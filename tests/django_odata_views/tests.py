@@ -8,7 +8,7 @@
 # ============================================================
 import unittest
 from django.test import TestCase
-from .models import *
+from tests.models import *
 import django_odata.odata as odata
 
 
@@ -189,3 +189,23 @@ class FilterTestCase(TestCase):
 		num_set = odata.set_filter(Number.objects.all(), 
 			'value ne 2')
 		self.assertEquals(len(num_set), 9)
+
+	def testNumericOr1(self):
+		num_set = odata.set_filter(Number.objects.all(), 
+			'value ne 2 or value eq 2')
+		self.assertEquals(len(num_set), 10)
+
+	def testNumericOr2(self):
+		num_set = odata.set_filter(Number.objects.all(), 
+			'value lt 3 or value gt 8')
+		values = map(lambda x: x.value, num_set)
+		self.assertTrue(0 in values)
+		self.assertTrue(1 in values)
+		self.assertTrue(2 in values)
+		self.assertTrue(9 in values)
+		self.assertEquals(len(num_set), 4)
+
+	def testNumericAnd(self):
+		num_set = odata.set_filter(Number.objects.all(), 
+			'value lt 3 and value gt 8')
+		self.assertEquals(len(num_set), 0)
