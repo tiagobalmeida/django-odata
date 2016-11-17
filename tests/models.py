@@ -8,26 +8,41 @@
 # ============================================================
 from django.db import models
 
-class Post(models.Model):
+
+class TestModel(models.Model):
+	"""
+	Base for test models that sets app_label.
+	"""
+	class Meta:
+		app_label = 'tests'
+		abstract = True
+
+
+class Post(TestModel):
 	title = models.CharField(max_length=1024)
 	author = models.ForeignKey('Author', blank=True)
 	body = models.TextField()
 	publishDate = models.DateField()
 	tags = models.ManyToManyField('Tag', blank=False)
 
-class Tag(models.Model):
+
+class Tag(TestModel):
 	name = models.CharField(max_length=1024)
 
-class Author(models.Model):
+
+class Author(TestModel):
 	name = models.CharField(max_length=1024)
 	dateOfBirth = models.DateField()
 
-class Main(models.Model):
+
+class Main(TestModel):
 	name = models.CharField(max_length=1024)
 	rel = models.ForeignKey('Sub', blank=True)
 
-class Sub(models.Model):
+
+class Sub(TestModel):
 	name = models.CharField(max_length=1024)
 
-class Number(models.Model):
+
+class Number(TestModel):
 	value = models.IntegerField()

@@ -11,7 +11,6 @@ import django_odata.filterparser as filterparser
 
 
 # TODO:
-# $filter supports ands/ors and parenthesis
 # $filter startswith,cp etc
 # Break the url get query into the constituents
 
@@ -181,6 +180,7 @@ def _parsed_filter_to_django(filter_ast):
 							_parsed_filter_to_django(operation.right))
 		return None
 
+
 	def transform_constraint(constraint):
 		Q_constructor_params = {}
 		Q_param = filter_ast.property # e.g: 'ChangedDate'
@@ -220,3 +220,10 @@ def set_filter(orm_queryset, odata_filter):
 	Q_expression = _parsed_filter_to_django(filter_ast)
 	return orm_queryset.filter(Q_expression)
 
+
+def set_top_skip(orm_queryset, odata_top, odata_skip):
+	return orm_queryset[int(odata_skip):int(odata_skip)+int(odata_top)]
+
+
+def count(orm_queryset):
+	return len(orm_queryset)

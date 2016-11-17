@@ -18,6 +18,7 @@ from django.core.serializers.python import Serializer
 from django.core.serializers.json import DjangoJSONEncoder
 from .odata import *
 
+
 class OdataJsonSerializer(Serializer):
 	def __init__(self, service_root, set_name):
 		super().__init__()
@@ -76,6 +77,7 @@ def get_set(request, set_name):
 	# Odata installation config
 	app = djsettings.DJANGO_ODATA['app']
 	# TODO: Raise improperly configured
+	# TODO: Multiple apps
 	# URL Query Options
 	q_order_by  = request.GET.get('$order_by', False)
 	q_filter_by = request.GET.get('$filter', False)
