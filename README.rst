@@ -18,6 +18,7 @@ Aim of the project
 - Full OData V2 support in json
 - Investigate if we can support odata push messages.
 
+All code is still on the dev branch.
 
 
 Quick start
