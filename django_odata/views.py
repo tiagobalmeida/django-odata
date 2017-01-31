@@ -21,7 +21,7 @@ from .urlparser import ResourcePath
 from .odata_to_django import *
 
 
-def handle_get_collection(request, resource_path):
+def handle_get_collection(request, resource_path, query_options):
     """
     Handles get requests to collections. The response is also
     affected by the Query Options (as defined on the spec below)
@@ -33,11 +33,13 @@ def handle_get_collection(request, resource_path):
     /Authors or /Publisher(1)/Books
     """
     orm_query = odata_resource_path_to_orm(resource_path)
+    result = orm_query.execute(query_options)
+    return result.serialize() # TODO format
     pass
 
 
 
-def handle_get_request(request, resource_path):
+def handle_get_request(request, resource_path, query_options):
     """
     Handles GET Requests
     """
@@ -53,10 +55,11 @@ def handle_request(request): # type: (Object) -> Object
     method.
     """
     rp = ResourcePath(request.path_info)
+    q  = QueryOptions(request.GET)
     if not rp.statically_valid():
         return HttpResponse(status=404)
     if request.method = 'GET':
-        return handle_get_request(request, rp)
+        return handle_get_request(request, rp, q)
     # if valid, result = execute request
     # serialize result
     pass
