@@ -6,8 +6,13 @@
 # This module uses PLY (http://www.dabeaz.com/ply/ply.html)
 # and a set of grammar rules to parse odata $filter's value.
 # The main function is called parse and it returns a
-# tree ... TODO
-#
+# tree. Every node on the tree is either a Constraint or a 
+# BinaryOperator. These are defined below. The Constraint is a simple
+# definition for the value of a property, e.g. 'property eq 2', the 
+# BinaryOperator can group 2 constraints with a boolean operator.
+# If you execute this module from the command line, it will run a 
+# set of unit tests.
+# 
 # TODO:
 # IDs can take slashes ( / ) as subobject paths.
 # 

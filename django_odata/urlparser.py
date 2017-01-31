@@ -6,6 +6,8 @@
 #
 #
 # ============================================================
+from .filterparser import Constraint, BinaryOperator
+from .filterparser import parse as filter_parser
 
 class ResourcePath(object):
     def __init__(self, string):
@@ -44,19 +46,30 @@ class ResourcePathComponent(object):
         pass
 
 
-class QueryOptions(object):
-     def __init__(self, request_get_options):
-        pass
 
-    def is_filter(self):
-        "Is this a $filter?"
-        pass
+class QueryOptions(object):
+    def __init__(self, request_get_options): # type: (django.http.QueryDict) -> QueryOptions
+        self._parsed_filter = None
+        self.request_get_options = request_get_options
+
+    def has_filter(self):
+        "Does this have a $filter?"
+        return bool(self.request_get_options.get('$filter'))
 
     def filter(self):
-        "Return the $filter query."
-        pass
+        """
+        Returns the $filter query parsed into a tree of filterparser.Constraint
+         or filterparser.BinaryOperator
+        """
+        if not self._parsed_filter:
+            self._parsed_filter = filter_parser(self.filter_raw())
+        return self._parsed_filter
 
-    def is_orderby(self):
+    def filter_raw(self):
+        "Returns actual $filter query or None"
+        return self.request_get_options.get('$filter')
+
+    def has_orderby(self):
         "Is this a $order_by?"
         pass
 
@@ -64,7 +77,7 @@ class QueryOptions(object):
         "Return the $orderby query."
         pass
 
-    def is_skip(self):
+    def has_skip(self):
         "Is this a $skip?"
         pass
 
@@ -72,10 +85,14 @@ class QueryOptions(object):
         "Return the $skip query."
         pass
 
-    def is_top(self):
+    def has_top(self):
         "Is this a $top?"
         pass
 
     def top(self):
         "Return the $top query."
+        pass
+
+    def format(self)
+        "Return the format specified in $format or a default"
         pass

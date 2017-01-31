@@ -11,7 +11,7 @@ import json
 from django.apps import apps
 from django.conf import settings as djsettings
 from django.core import serializers
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseNotAllowed
 from django.template.response import TemplateResponse
 from django.urls import reverse
 from django.core.serializers.python import Serializer
@@ -32,10 +32,9 @@ def handle_get_collection(request, resource_path, query_options):
     Only works when the request is addressing a collection, Example:
     /Authors or /Publisher(1)/Books
     """
-    orm_query = odata_resource_path_to_orm(resource_path)
+    orm_query = OrmQuery.from_resource_path(resource_path)
     result = orm_query.execute(query_options)
-    return result.serialize() # TODO format
-    pass
+    return result.serialize(query_options.format)
 
 
 
@@ -43,8 +42,8 @@ def handle_get_request(request, resource_path, query_options):
     """
     Handles GET Requests
     """
-    if resource_path.address_collection():
-        return handle_get_collection(request, resource_path)
+    if resource_path.addresses_collection():
+        return handle_get_collection(request, resource_path, query_options)
     pass
 
 
@@ -60,7 +59,6 @@ def handle_request(request): # type: (Object) -> Object
         return HttpResponse(status=404)
     if request.method = 'GET':
         return handle_get_request(request, rp, q)
-    # if valid, result = execute request
-    # serialize result
-    pass
+    # TODO non get requests
+    return HttpResponseNotAllowed(['GET']) # only allow gets for now
 
