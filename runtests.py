@@ -10,7 +10,7 @@ PYTEST_ARGS = {
     'fast': ['tests', '--tb=short', '-q', '-s', '-rw'],
 }
 
-sys.path.append(os.path.dirname(__file__))
+#sys.path.append(os.path.dirname(__file__))
 
 
 def exit_on_failure(ret, message=None):
