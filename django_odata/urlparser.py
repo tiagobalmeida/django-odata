@@ -11,15 +11,19 @@ from .filterparser import parse as filter_parser
 
 class ResourcePath(object):
     def __init__(self, string):
-        pass
+        self._resource_path = string
+        self._components = False
 
     def components(self): # type: () -> List[ResourcePathComponent]
         """Returns a list of ResourcePathComponents"""
-        pass
+        if not self._components:
+            self._components = [ResourcePath(_) for _ in 
+                self._resource_path.split('/')]
+        return self._components
 
     def statically_valid(self): # type: () -> bool
         "Check if Resource path is syntactically valid"
-        pass
+        return True #TODO
 
     def addresses_collection(self): # type: () -> bool
         "Checks if the whole resource path is addressing a collection."
@@ -35,22 +39,27 @@ class ResourcePath(object):
 
 class ResourcePathComponent(object):
     def __init__(self, string):
-        pass
+            self._component = string
 
     def is_count(self):
-        "Is this a $count?"
-        pass
+            "Is this a $count?"
+            return self._component == '$count'
 
     def is_value(self):
-        "Is this a $value?"
-        pass
+            "Is this a $value?"
+            return self._component == '$value'
 
 
 
 class QueryOptions(object):
-    def __init__(self, request_get_options): # type: (django.http.QueryDict) -> QueryOptions
+    def __init__(self, request_get_options, DEFAULT_FORMAT=None): 
+        # type: (django.http.QueryDict) -> QueryOptions
         self._parsed_filter = None
         self.request_get_options = request_get_options
+        if not DEFAULT_FORMAT:
+            self.DEFAULT_FORMAT = 'json'
+        else:
+            self.DEFAULT_FORMAT = DEFAULT_FORMAT
 
     def has_filter(self):
         "Does this have a $filter?"
@@ -62,7 +71,7 @@ class QueryOptions(object):
          or filterparser.BinaryOperator
         """
         if not self._parsed_filter:
-            self._parsed_filter = filter_parser(self.filter_raw())
+                self._parsed_filter = filter_parser(self.filter_raw())
         return self._parsed_filter
 
     def filter_raw(self):
@@ -70,29 +79,30 @@ class QueryOptions(object):
         return self.request_get_options.get('$filter')
 
     def has_orderby(self):
-        "Is this a $order_by?"
-        pass
-
+            "Does this have an $order_by?"
+            return bool(self.request_get_options.get('$order_by'))
+            
     def orderby(self):
         "Return the $orderby query."
-        pass
+        return self.request_get_options.get('$order_by', None)
 
     def has_skip(self):
-        "Is this a $skip?"
-        pass
+        "Does this have a $skip?"
+        return bool(self.request_get_options.get('$skip'))
 
     def skip(self):
         "Return the $skip query."
-        pass
+        return self.request_get_options.get('$skip',None)
 
     def has_top(self):
-        "Is this a $top?"
-        pass
+        "Does this have a $top?"
+        return bool(self.request_get_options.get('$top'))
 
     def top(self):
         "Return the $top query."
-        pass
+        return self.request_get_options.get('$top',None)
 
-    def format(self)
+    def format(self):
         "Return the format specified in $format or a default"
-        pass
+        return self.request_get_options.get('$format', 
+            self.DEFAULT_FORMAT)
