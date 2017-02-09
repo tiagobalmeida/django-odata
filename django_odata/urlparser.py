@@ -46,15 +46,15 @@ class ResourcePathComponent(object):
     key_regex = compile_key_regex()
 
     def __init__(self, string):
-            self._component = string
+        self._component = string
 
     def is_count(self):
-            "Is this a $count?"
-            return self._component == '$count'
+        "Is this a $count?"
+        return self._component == '$count'
 
     def is_value(self):
-            "Is this a $value?"
-            return self._component == '$value'
+        "Is this a $value?"
+        return self._component == '$value'
 
     def has_key(self):
         """
@@ -66,7 +66,7 @@ class ResourcePathComponent(object):
     def key(self):
         "Returns the key that is in the component, or None"
         m = self.key_regex.match(self._component)
-        return m.group(0)
+        return (m.group(1) if m != None else None)
 
 
 class QueryOptions(object):
