@@ -59,3 +59,4 @@ class ResourcePathTestCase(TestCase):
         self.assertTrue(sub_ent_path.statically_valid())
         self.assertFalse(sub_ent_path.addresses_collection())
         self.assertTrue(sub_ent_path.addresses_entity_or_property())
+        # TODO tests for collection_name

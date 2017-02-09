@@ -6,6 +6,7 @@
 #
 #
 # ============================================================
+import re
 from .filterparser import Constraint, BinaryOperator
 from .filterparser import parse as filter_parser
 
@@ -37,13 +38,17 @@ class ResourcePath(object):
         pass
 
 
+def compile_col_regex():
+    return re.compile(r'(\w+)')
+
+
 def compile_key_regex():
-    import re
     return re.compile(r'\w+\((\d+)\)')
 
 
 class ResourcePathComponent(object):
     key_regex = compile_key_regex()
+    col_regex = compile_col_regex()
 
     def __init__(self, string):
         self._component = string
@@ -55,6 +60,11 @@ class ResourcePathComponent(object):
     def is_value(self):
         "Is this a $value?"
         return self._component == '$value'
+
+    def collection_name(self):
+        "Returns the collection in the component, or None"
+        m = self.col_regex.match(self._component)
+        return (m.group(1) if m != None else None)
 
     def has_key(self):
         """

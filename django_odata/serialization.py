@@ -8,11 +8,12 @@
 # ============================================================
 
 class OrmQueryResult(object):
-    def __init__(self):
+    def __init__(self, orm_query):
+        self._orm_query = orm_query
         pass
     
     def serialize(self, format):
         """
-        Executes the current orm query with the query options
+        Serializes the query result according to format
         """
         pass

@@ -22,6 +22,7 @@ from .odata_to_django import *
 
 
 def handle_get_collection(request, resource_path, query_options):
+    # type: (object, ResourcePath, QueryOptions) -> object
     """
     Handles get requests to collections. The response is also
     affected by the Query Options (as defined on the spec below)
