@@ -37,7 +37,14 @@ class ResourcePath(object):
         pass
 
 
+def compile_key_regex():
+    import re
+    return re.compile(r'\w+\((\d+)\)')
+
+
 class ResourcePathComponent(object):
+    key_regex = compile_key_regex()
+
     def __init__(self, string):
             self._component = string
 
@@ -49,6 +56,17 @@ class ResourcePathComponent(object):
             "Is this a $value?"
             return self._component == '$value'
 
+    def has_key(self):
+        """
+        Is this component a key based addressing?
+        These are in the form Collection(key)
+        """
+        return bool(self.key())
+
+    def key(self):
+        "Returns the key that is in the component, or None"
+        m = self.key_regex.match(self._component)
+        return m.group(0)
 
 
 class QueryOptions(object):

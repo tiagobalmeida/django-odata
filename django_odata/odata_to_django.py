@@ -8,8 +8,8 @@
 # ============================================================
 
 class OrmQuery(object):
-    def __init__(self):
-        pass
+    def __init__(self, resource_path=None):
+        self._resource_path = resource_path
     
 
     def execute(self, query_options):
@@ -42,5 +42,9 @@ class OrmQuery(object):
         """
         rp = resource_path # make this shorter
         components = rp.components() # type: List[ResourcePathComponent]
+        orm_query = OrmQuery(rp)
         # For each of the components, check if it is a collection or instance.
+        for comp in components:
+            if comp.key():
+                
         pass
