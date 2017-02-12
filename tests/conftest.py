@@ -44,12 +44,12 @@ def pytest_configure():
 			),
 			# django odata settings
 			DJANGO_ODATA={
-					'app': 'webapp', # TODO, redundant
+					'app': 'tests', # TODO, redundant
 					'models': {
-						'webapp': [
-							'webapp.Post',
-							'webapp.Tag',
-							'webapp.Author'
+						'tests': [
+							'tests.Post',
+							'tests.Tag',
+							'tests.Author'
 						]
 					}
 			}

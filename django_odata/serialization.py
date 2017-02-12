@@ -6,14 +6,14 @@
 # 
 #
 # ============================================================
+import pprint
 
 class OrmQueryResult(object):
-    def __init__(self, orm_query):
-        self._orm_query = orm_query
-        pass
+    def __init__(self, django_query):
+        self._django_query = django_query
     
     def serialize(self, format):
         """
         Serializes the query result according to format
         """
-        pass
+        return pprint.pprint(self._django_query)

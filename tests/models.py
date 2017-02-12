@@ -20,7 +20,8 @@ class TestModel(models.Model):
 
 class Post(TestModel):
 	title = models.CharField(max_length=1024)
-	author = models.ForeignKey('Author', blank=True)
+	author = models.ForeignKey('Author', blank=True, 
+		related_name='posts')
 	body = models.TextField()
 	publishDate = models.DateField()
 	tags = models.ManyToManyField('Tag', blank=False)

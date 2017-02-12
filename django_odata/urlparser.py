@@ -18,13 +18,13 @@ class ResourcePath(object):
     def components(self): # type: () -> List[ResourcePathComponent]
         """Returns a list of ResourcePathComponents"""
         if not self._components:
-            self._components = [ResourcePath(_) for _ in 
+            self._components = [ResourcePathComponent(_) for _ in 
                 self._resource_path.split('/')]
         return self._components
 
     def statically_valid(self): # type: () -> bool
         "Check if Resource path is syntactically valid"
-        return True #TODO
+        return True #TODO pass
 
     def addresses_collection(self): # type: () -> bool
         "Checks if the whole resource path is addressing a collection."

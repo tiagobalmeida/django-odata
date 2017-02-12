@@ -21,10 +21,12 @@ from .urlparser import ResourcePath
 from .odata_to_django import *
 
 
-def handle_get_collection(request, resource_path, query_options):
+
+
+def handle_get_request(request, resource_path, query_options):
     # type: (object, ResourcePath, QueryOptions) -> object
     """
-    Handles get requests to collections. The response is also
+    Handles get requests. The response is also
     affected by the Query Options (as defined on the spec below)
 
     For info on what this should comply with, read:
@@ -36,16 +38,6 @@ def handle_get_collection(request, resource_path, query_options):
     orm_query = OrmQuery.from_resource_path(resource_path)
     result = orm_query.execute(query_options)
     return result.serialize(query_options.format)
-
-
-
-def handle_get_request(request, resource_path, query_options):
-    """
-    Handles GET Requests
-    """
-    if resource_path.addresses_collection():
-        return handle_get_collection(request, resource_path, query_options)
-    pass
 
 
 
@@ -61,5 +53,6 @@ def handle_request(request): # type: (Object) -> Object
     if request.method = 'GET':
         return handle_get_request(request, rp, q)
     # TODO non get requests
+    pass
     return HttpResponseNotAllowed(['GET']) # only allow gets for now
 
