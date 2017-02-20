@@ -17,8 +17,12 @@ class OrmQueryTestCase(TestCase):
     "Tests for class OrmQuery"
 
     def setUp(self):
-        # Create an Author (Tiago) with 2 posts
-        a = Author.objects.create(name="Tiago",
+        # Create a few objects
+        # Author Newton with 2 posts
+        # Author Hooke with 1 post
+        a = Author.objects.create(name="Newton",
+            dateOfBirth=datetime.datetime.now())
+        b = Author.objects.create(name="Hooke",
             dateOfBirth=datetime.datetime.now())
         self.author_key = a.id
         t1 = Tag.objects.create(name="tag1")
@@ -27,6 +31,8 @@ class OrmQueryTestCase(TestCase):
             author=a, publishDate=datetime.datetime.now())
         Post.objects.create(title='t2', body='b2',
             author=a, publishDate=datetime.datetime.now())
+        Post.objects.create(title='t3', body='b3',
+            author=b, publishDate=datetime.datetime.now())
 
     def testQueryAuthor(self):
         "Test OrmQuery"
@@ -35,7 +41,7 @@ class OrmQueryTestCase(TestCase):
         orm_query = odata2django.OrmQuery.from_resource_path(rp)
         orm_query_result = orm_query.execute()
         result = list(orm_query_result._django_query)
-        self.assertEquals(len(result), 1)
+        self.assertEquals(len(result), 2)
         self.assertTrue(type(result[0])==Author)
     
     def testQueryPosts(self):
@@ -52,16 +58,16 @@ class OrmQueryTestCase(TestCase):
         rp = urlparser.ResourcePath('Author(%s)' % self.author_key)
         orm_query = odata2django.OrmQuery.from_resource_path(rp)
         orm_query_result = orm_query.execute()
-        result = list(orm_query_result._django_query)
+        result = list(orm_query_result._django_query.all())
         self.assertEquals(len(result), 1)
         self.assertTrue(type(result[0])==Author)
-        self.assertEquals(result[0].name, 'Tiago')
+        self.assertEquals(result[0].name, 'Newton')
     
     def testQueryAuthor1Posts(self):
-        # Query Author(1)
+        # Query Author(1)/posts
         rp = urlparser.ResourcePath('Author(%s)/posts' % self.author_key)
         orm_query = odata2django.OrmQuery.from_resource_path(rp)
         orm_query_result = orm_query.execute()
-        result = list(orm_query_result._django_query)
+        result = list(orm_query_result._django_query.all())
         self.assertEquals(len(result), 1)
         self.assertTrue(type(result[0])==Author)

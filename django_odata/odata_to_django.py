@@ -6,6 +6,7 @@
 # Set of function to map the Odata layer to django ORM queries
 #
 # ============================================================
+import pdb
 from django.apps import apps
 from django.conf import settings as djsettings
 from .serialization import OrmQueryResult
@@ -66,9 +67,10 @@ class OrmQuery(object):
         # For each of the components, check if it is a collection or instance.
         for comp in components[1:]:
             if comp.has_key():
-                dj_query = dj_query.get(comp.key()) # get an instance
+                dj_query = dj_query.get(comp.key()).get() # get an instance
             else:
                 print(comp.collection_name())
-                dj_query = dj_query[comp.collection_name()] # navigate          
+                #pdb.set_trace()
+                dj_query = dj_query.get().__getattribute__(comp.collection_name()) # navigate          
         newOrmQuery = OrmQuery(resource_path, dj_query)
         return newOrmQuery
