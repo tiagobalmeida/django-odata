@@ -64,13 +64,15 @@ class OrmQuery(object):
         app = djsettings.DJANGO_ODATA['app']
         root_model = apps.get_model(app, root_model_name)        
         dj_query = root_model.objects.all()
-        # For each of the components, check if it is a collection or instance.
+        if components[0].has_key():
+            # pdb.set_trace()
+            dj_query = dj_query.get(pk=components[0].key())
+        # For each of the components, check if it 
+        # is a collection or instance.
         for comp in components[1:]:
+            dj_query = dj_query.__getattribute__(
+                comp.collection_name()) # navigate          
             if comp.has_key():
-                dj_query = dj_query.get(comp.key()).get() # get an instance
-            else:
-                print(comp.collection_name())
-                #pdb.set_trace()
-                dj_query = dj_query.get().__getattribute__(comp.collection_name()) # navigate          
+                dj_query = dj_query.get(comp.key()) # get an instance
         newOrmQuery = OrmQuery(resource_path, dj_query)
         return newOrmQuery

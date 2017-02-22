@@ -58,10 +58,9 @@ class OrmQueryTestCase(TestCase):
         rp = urlparser.ResourcePath('Author(%s)' % self.author_key)
         orm_query = odata2django.OrmQuery.from_resource_path(rp)
         orm_query_result = orm_query.execute()
-        result = list(orm_query_result._django_query.all())
-        self.assertEquals(len(result), 1)
-        self.assertTrue(type(result[0])==Author)
-        self.assertEquals(result[0].name, 'Newton')
+        result = orm_query_result._django_query
+        self.assertEquals(type(result),Author)
+        self.assertEquals(result.name, 'Newton')
     
     def testQueryAuthor1Posts(self):
         # Query Author(1)/posts
@@ -69,5 +68,5 @@ class OrmQueryTestCase(TestCase):
         orm_query = odata2django.OrmQuery.from_resource_path(rp)
         orm_query_result = orm_query.execute()
         result = list(orm_query_result._django_query.all())
-        self.assertEquals(len(result), 1)
+        self.assertEquals(len(result), 2)
         self.assertTrue(type(result[0])==Author)
