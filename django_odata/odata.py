@@ -200,7 +200,7 @@ def _parsed_filter_to_django(filter_ast):
 
 
 
-def set_filter(orm_queryset, odata_filter):
+def set_filter(orm_queryset, filter_ast):
 	"""
 	Takes a django ORM query and applies filtering.
 	
@@ -216,7 +216,12 @@ def set_filter(orm_queryset, odata_filter):
 	dj 	-> Django
 	ast -> Abstract syntax tree
 	"""
-	filter_ast = filterparser.parse(odata_filter)
+	#TODO, FIXME. This function sometimes is called with 
+	# the second parameter being a string on the right of
+	# $filter, other times is being called with a parsed version 
+	# of the same thing.
+	if isinstance(filter_ast, str): #FIXME
+		filter_ast = filterparser.parse(filter_ast)
 	Q_expression = _parsed_filter_to_django(filter_ast)
 	return orm_queryset.filter(Q_expression)
 

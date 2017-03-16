@@ -21,6 +21,7 @@
 import ply.lex as lex
 import ply.yacc as yacc
 import unittest
+import pdb
 
 C_OPERATOR_AND 	= 'AND'
 C_OPERATOR_OR 	= 'OR'
@@ -74,13 +75,19 @@ tokens = (
 	'NUMBER',
 	'LPAREN',
 	'RPAREN',
-	'ID'
+	'ID',
+	'SQUOTE',
+	'TRUE',
+	'FALSE'
 ) + tuple(reserved.values())
 
 
 # Regular expression rules for simple tokens
 t_LPAREN 	= r'\('
 t_RPAREN 	= r'\)'
+t_SQUOTE 	= r"'"
+t_TRUE		= r'true'
+t_FALSE		= r'false'
 t_ignore = " \t" # ignored characters (spaces and tabs)
 
 
@@ -125,9 +132,15 @@ def p_filter(t):
 
 def p_value(t):
 	"""value 	: NUMBER 
+						| TRUE
+						| FALSE
+						| SQUOTE ID SQUOTE
 						| ID
 	"""
-	t[0] = t[1]
+	if len(t)>2:
+		t[0] = t[2]
+	else:
+		t[0] = t[1]
 
 
 def p_constraint(t):
@@ -170,6 +183,7 @@ def p_error(t):
 parser = yacc.yacc()
 
 def parse(filter_expression):
+	assert isinstance(filter_expression, str)
 	return parser.parse(filter_expression)
 
 
@@ -267,7 +281,28 @@ class TestCase(unittest.TestCase):
 		self.assertEqual(tree.operator, C_OPERATOR_OR)
 		self.assertEqual(tree.right.operator, C_OPERATOR_AND)
 		self.assertTrue(isinstance(tree.left, Constraint))
-		
+
+	def test12(self):
+		"""
+		Tests string value.
+		"""
+		debug_print('test12')
+		tree = parse("t1 eq 'somestring'")
+		self.assertTrue(isinstance(tree, Constraint))
+		self.assertEqual(tree.value, 'somestring')
+		self.assertEqual(tree.operator, C_OPERATOR_EQ)
+		self.assertEqual(tree.property, 't1')
+
+	def test13(self):
+		"""
+		Tests true value.
+		"""
+		debug_print('test12')
+		tree = parse("t1 eq true")
+		self.assertTrue(isinstance(tree, Constraint))
+		self.assertEqual(tree.value, 'true')
+		self.assertEqual(tree.operator, C_OPERATOR_EQ)
+		self.assertEqual(tree.property, 't1')
 
 if __name__ == '__main__':
 	unittest.main()

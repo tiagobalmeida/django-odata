@@ -10,6 +10,7 @@ import pdb
 from django.apps import apps
 from django.conf import settings as djsettings
 from .serialization import OrmQueryResult
+from .odata import set_filter
 
 
 def model_from_external_name(col_name):
@@ -32,6 +33,9 @@ class OrmQuery(object):
         Returns an object with the result that knows how to 
             serialize itself.
         """
+        if query_options:
+            self._dj_query = set_filter(self._dj_query,
+                query_options.filter())            
         return OrmQueryResult(self._dj_query) # TODO query_options?
 
 
