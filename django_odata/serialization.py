@@ -6,9 +6,23 @@
 # 
 #
 # ============================================================
+import json
 import pprint
 from django.core.serializers.python import Serializer
 from django.core.serializers.json import DjangoJSONEncoder
+
+
+class GenericOdataJsonSerializer(object):
+	@staticmethod
+	def serialize(obj):
+		"""
+		Inserts obj as the value of property "d" in an 
+		outer object and converts this to a json.
+		"""
+		wrapped = {'d':obj}
+		result = json.dumps(wrapped, separators=(',', ':'))
+		return result
+
 
 class OdataJsonSerializer(Serializer):
     def __init__(self, service_root, set_name):
@@ -58,9 +72,8 @@ class OrmQueryResult(object):
     def __init__(self, django_query):
         self._django_query = django_query
     
-    def serialize(self, format):
+    def serialize(self, format=None):
         """
         Serializes the query result according to format
         """
-
         return pprint.pprint(self._django_query)

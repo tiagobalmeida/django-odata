@@ -19,8 +19,21 @@ from django.core.serializers.json import DjangoJSONEncoder
 from .odata import *
 from .urlparser import ResourcePath
 from .odata_to_django import *
+from .serialization import GenericOdataJsonSerializer
+import odata_to_django as o2d
 
-
+def root_get_response(request, resource_path, query_options):
+    # type: (object, ResourcePath, QueryOptions) -> object
+    """
+    Handles get request to the root of the service.
+    This returns an object with a collections list.
+    E.g.:
+    http://services.odata.org/V2/Northwind/Northwind.svc/
+    """
+    current_app = 'app' # TODO: deal with multiple apps
+    root_response_data = o2d.get_root_response_data(current_app)
+    response_content = {'EntitySets':list(root_response_data)}
+    return GenericOdataJsonSerializer.serialize(response_content)
 
 
 def handle_get_request(request, resource_path, query_options):
@@ -32,9 +45,10 @@ def handle_get_request(request, resource_path, query_options):
     For info on what this should comply with, read:
     http://www.odata.org/documentation/odata-version-2-0/uri-conventions/
     
-    Only works when the request is addressing a collection, Example:
-    /Authors or /Publisher(1)/Books
     """
+    if not resource_path:
+      return root_get_response(request, 
+        resource_path, query_options)
     orm_query = OrmQuery.from_resource_path(resource_path)
     result = orm_query.execute(query_options)
     return result.serialize(query_options.format)
@@ -49,9 +63,9 @@ def handle_request(request): # type: (Object) -> Object
     rp = ResourcePath(request.path_info)
     q  = QueryOptions(request.GET)
     if not rp.statically_valid():
-        return HttpResponse(status=404)
-    if request.method = 'GET':
-        return handle_get_request(request, rp, q)
+      return HttpResponse(status=404)
+    if request.method == 'GET':
+      return handle_get_request(request, rp, q)
     # TODO non get requests
     pass
     return HttpResponseNotAllowed(['GET']) # only allow gets for now
