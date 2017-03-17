@@ -11,7 +11,7 @@ from django.apps import apps
 from django.conf import settings as djsettings
 from .serialization import OrmQueryResult
 from .odata import set_filter
-
+import django_odata.config as config
 
 def model_from_external_name(col_name):
   return col_name # TODO
@@ -41,8 +41,7 @@ def get_root_response_data(app_name):
   Model
   https://docs.djangoproject.com/en/1.10/ref/models/instances/#django.db.models.Model
   """
-  app_models = get_app_models_names(app_name)
-  return { 'EntitySets' : app_models }
+  return { 'EntitySets' : list(config.get_entity_sets_list()) }
 
 
 class OrmQuery(object):

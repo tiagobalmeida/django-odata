@@ -12,7 +12,7 @@ Quick start for django users
 
     INSTALLED_APPS = [
         ...
-        'django_odaya',
+        'django_odata',
     ]
 
 2. Include the polls URLconf in your project urls.py like this::
