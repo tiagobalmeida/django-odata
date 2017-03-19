@@ -13,6 +13,22 @@ from .serialization import OrmQueryResult
 from .odata import set_filter
 import django_odata.config as config
 
+
+class ODataEntity(object):
+  def __init__(self):
+    pass
+
+def get_odata_entity_by_model_name(app_name, model_name):
+  """
+  Returns an ODataEntity instance representing
+  the Django model
+  https://docs.djangoproject.com/en/1.10/ref/models/meta/
+  """
+  model = apps.get_model(app_name, model_name)
+  fields = model._meta.get_fields()
+  pass # TODO do something with fields.
+
+
 def model_from_external_name(col_name):
   return col_name # TODO
 
