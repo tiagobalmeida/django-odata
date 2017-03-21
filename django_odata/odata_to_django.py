@@ -14,9 +14,12 @@ from .odata import set_filter
 import django_odata.config as config
 
 
-class ODataEntity(object):
-  def __init__(self):
-    pass
+class ODataEntityField(object):
+  def __init__(self, django_field):
+    f = django_field
+    self.name = f.name
+  	pass # TODO do something with fields.
+     
 
 def get_odata_entity_by_model_name(app_name, model_name):
   """
@@ -26,7 +29,8 @@ def get_odata_entity_by_model_name(app_name, model_name):
   """
   model = apps.get_model(app_name, model_name)
   fields = model._meta.get_fields()
-  pass # TODO do something with fields.
+  fields = map(lambda f : ODataEntityField(f), fields)
+  # todo...
 
 
 def model_from_external_name(col_name):
