@@ -28,11 +28,19 @@ def metadata(request):
   """
   Handles request to /$metadata
   """
+  current_app = djsettings.DJANGO_ODATA['app']
+  def odata_entity_by_model_name(model_name):
+  	return get_odata_entity_by_model_name(current_app,
+  		model_name)
+  entities = get_app_models_names(current_app)
+  entities = map(
+  	odata_entity_by_model_name,
+  	entities)
   metadata = {
     'schemas': [
       {
         'namespace': 'django',
-        'entities': [],
+        'entities': entities,
         'associations': [],
       }
     ]
