@@ -5,4 +5,9 @@
 {% for prop in entity.fields %}
 <Property Name="{{prop.name}}" Type="{{prop.edm_type}}" Nullable="{{prop.nullable}}"/> 
 {% endfor %}
+{% for nav in entity.relationships %}
+<NavigationProperty Name="{{nav.name}}" Relationship="" FromRole="" ToRole=""/>
+{% empty %}
+<No/>
+{% endfor %}
 </EntityType>

@@ -45,11 +45,11 @@ class ODataEntityField(object):
 class ODataEntity(object):
   def __init__(self, name, odata_entity_fields):
     # split the fields between relations and non
-    self.fields = (
+    self.fields = list(
       filter(lambda f:not f.is_relation, 
         odata_entity_fields))
-    self.relations = filter(lambda f:f.is_relation, 
-        odata_entity_fields)
+    self.relationships = list(filter(lambda f:f.is_relation, 
+        odata_entity_fields))
     self.name = name
     self.key_name = 'id' #TODO-V2 support other keys
 
@@ -62,7 +62,7 @@ def get_odata_entity_by_model_name(app_name, model_name):
   """
   model = apps.get_model(app_name, model_name)
   fields = model._meta.get_fields()
-  fields = map(lambda f : ODataEntityField(f), fields)
+  fields = list(map(lambda f : ODataEntityField(f), fields))
   # todo...
   return ODataEntity(model_name, fields)
 
