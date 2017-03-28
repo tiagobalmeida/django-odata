@@ -1,5 +1,8 @@
 <EntityType Name="{{entity.name}}">
-{% for property in entity.fields %}
-<Property Name="{{property.name}}" Type="{{property.edm_type}}"/> 
+<Key>
+	<PropertyRef Name="{{entity.key_name}}"/>
+</Key>
+{% for prop in entity.fields %}
+<Property Name="{{prop.name}}" Type="{{prop.edm_type}}" Nullable="{{prop.nullable}}"/> 
 {% endfor %}
 </EntityType>
