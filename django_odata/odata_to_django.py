@@ -22,9 +22,11 @@ def _map_django_type_to_odata(dj_field):
   https://docs.djangoproject.com/en/1.10/ref/models/fields/
   """
   type_map = {
-    models.CharField: 'Edm.String',
-    models.TextField: 'Edm.String',
-    models.DateField: 'Edm.Date'
+    models.AutoField:     'Edm.Int32',
+    models.IntegerField:  'Edm.Int32',
+    models.CharField:     'Edm.String',
+    models.TextField:     'Edm.String',
+    models.DateField:     'Edm.Date'
     # TODO: More types
   }
   for dj_field_type, edm_type in type_map.items():

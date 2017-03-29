@@ -22,7 +22,7 @@ from .odata_to_django import *
 from .serialization import GenericOdataJsonSerializer
 import django_odata.odata_to_django as o2d
 import django_odata.urlparser as urlparser
-
+import django_odata.metadata as metadata
 
 def metadata(request):
   """
@@ -32,16 +32,16 @@ def metadata(request):
   def odata_entity_by_model_name(model_name):
   	return get_odata_entity_by_model_name(current_app,
   		model_name)
-  entities = get_app_models_names(current_app)
-  entities = map(
-  	odata_entity_by_model_name,
-  	entities)
+  django_models = get_app_models_names(current_app)
+  odata_entities = map(odata_entity_by_model_name, django_models)
+  associations = metadata.build_associations(
+    django_models, odata_entities)
   metadata = {
     'schemas': [
       {
         'namespace': 'django',
-        'entities': entities,
-        'associations': [],
+        'entities': odata_entities,
+        'associations': associations,
       }
     ]
   }
