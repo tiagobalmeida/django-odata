@@ -47,3 +47,16 @@ class Sub(TestModel):
 
 class Number(TestModel):
 	value = models.IntegerField()
+
+
+# --------------------
+# Northwind model
+class CustomerDemographic(TestModel):
+	CustomerDesc = models.CharField()
+	Customers = models.ManyToManyField('Customer', 
+		related_name='CustomerDemographics')
+
+class Customer(TestModel):
+	CompanyName = models.CharField(max_length=40)
+	ContactName = models.CharField(max_length=30)
+	# TODO.. more fields

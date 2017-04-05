@@ -14,59 +14,7 @@ from .serialization import OrmQueryResult
 from .odata import set_filter
 import django_odata.config as config
 
-def _map_django_type_to_odata(dj_field):
-  """
-  Odata primitive types:
-  http://www.odata.org/documentation/odata-version-2-0/overview/
-  Django field types:
-  https://docs.djangoproject.com/en/1.10/ref/models/fields/
-  """
-  type_map = {
-    models.AutoField:     'Edm.Int32',
-    models.IntegerField:  'Edm.Int32',
-    models.CharField:     'Edm.String',
-    models.TextField:     'Edm.String',
-    models.DateField:     'Edm.Date'
-    # TODO: More types
-  }
-  for dj_field_type, edm_type in type_map.items():
-    if isinstance(dj_field, dj_field_type):
-      return edm_type
-  return None
 
-
-class ODataEntityField(object):
-  def __init__(self, django_field):
-    f = django_field
-    self.name = f.name
-    self.edm_type = _map_django_type_to_odata(django_field)
-    self.nullable = django_field.null
-    self.is_relation = django_field.is_relation
-     
-
-class ODataEntity(object):
-  def __init__(self, name, odata_entity_fields):
-    # split the fields between relations and non
-    self.fields = list(
-      filter(lambda f:not f.is_relation, 
-        odata_entity_fields))
-    self.relationships = list(filter(lambda f:f.is_relation, 
-        odata_entity_fields))
-    self.name = name
-    self.key_name = 'id' #TODO-V2 support other keys
-
-
-def get_odata_entity_by_model_name(app_name, model_name):
-  """
-  Returns an ODataEntity instance representing
-  the Django model
-  https://docs.djangoproject.com/en/1.10/ref/models/meta/
-  """
-  model = apps.get_model(app_name, model_name)
-  fields = model._meta.get_fields()
-  fields = list(map(lambda f : ODataEntityField(f), fields))
-  # todo...
-  return ODataEntity(model_name, fields)
 
 
 def model_from_external_name(col_name):

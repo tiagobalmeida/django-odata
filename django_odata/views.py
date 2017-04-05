@@ -22,32 +22,30 @@ from .odata_to_django import *
 from .serialization import GenericOdataJsonSerializer
 import django_odata.odata_to_django as o2d
 import django_odata.urlparser as urlparser
-import django_odata.metadata as metadata
+import django_odata.metadata
+
 
 def metadata(request):
   """
   Handles request to /$metadata
   """
   current_app = djsettings.DJANGO_ODATA['app']
-  def odata_entity_by_model_name(model_name):
-  	return get_odata_entity_by_model_name(current_app,
-  		model_name)
-  django_models = get_app_models_names(current_app)
-  odata_entities = map(odata_entity_by_model_name, django_models)
-  associations = metadata.build_associations(
-    django_models, odata_entities)
-  metadata = {
+  django_models = o2d.get_app_models_names(current_app)
+  metadata_schema = django_odata.metadata.MetadataSchema.from_django_models(
+  	current_app, django_models)
+  #pdb.set_trace()
+  metadata_ctx = {
     'schemas': [
       {
         'namespace': 'django',
-        'entities': odata_entities,
-        'associations': associations,
+        'entities': metadata_schema.entities,
+        'associations': metadata_schema.associations,
       }
     ]
   }
   return TemplateResponse(request, 
     'django_odata/metadata.xml',
-    context=metadata,
+    context=metadata_ctx,
     content_type='application/xml;charset=utf-8')
 
 

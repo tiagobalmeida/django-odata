@@ -1,0 +1,7 @@
+Resources
+http://services.odata.org/validation/validation.htm#
+
+
+
+metadata navigation property should have the Partner attribute
+http://docs.oasis-open.org/odata/odata/v4.0/errata03/os/complete/part3-csdl/odata-v4.0-errata03-os-part3-csdl-complete.html#_Toc453752541

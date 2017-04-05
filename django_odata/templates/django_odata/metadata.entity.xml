@@ -6,8 +6,10 @@
 <Property Name="{{prop.name}}" Type="{{prop.edm_type}}" Nullable="{{prop.nullable}}"/> 
 {% endfor %}
 {% for nav in entity.relationships %}
-<NavigationProperty Name="{{nav.name}}" Relationship="" FromRole="" ToRole=""/>
-{% empty %}
-<No/>
+{% if nav.many %}
+<NavigationProperty Name="{{nav.name}}" Type="Collection({{nav.related_model_name}})"/>
+{% else %}
+<NavigationProperty Name="{{nav.name}}" Type="{{nav.related_model_name}}"/>
+{% endif %}
 {% endfor %}
 </EntityType>

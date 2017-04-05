@@ -1,13 +1,9 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<edmx:Edmx Version="1.0" xmlns:edmx="http://schemas.microsoft.com/ado/2007/06/edmx">
-	<edmx:DataServices xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata" m:DataServiceVersion="1.0">
+<edmx:Edmx xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx" Version="4.0">
+	<edmx:DataServices>
 		{% for schema in schemas %}
-			<Schema xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices" xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata" xmlns="http://schemas.microsoft.com/ado/2008/09/edm" Namespace="{{schema.namespace}}">
+			<Schema xmlns="http://docs.oasis-open.org/odata/ns/edm" Namespace="{{schema.namespace}}">
 				{% for entity in schema.entities %}
 				{% include 'django_odata/metadata.entity.xml' %}
-				{% endfor %}
-				{% for association in schema.associations %}
-				{% include 'django_odata/metadata.association.xml' %}
 				{% endfor %}
 			</Schema>
 		{% endfor %}
