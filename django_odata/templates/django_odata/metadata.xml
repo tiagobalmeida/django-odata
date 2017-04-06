@@ -1,11 +1,14 @@
 <edmx:Edmx xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx" Version="4.0">
 	<edmx:DataServices>
-		{% for schema in schemas %}
-			<Schema xmlns="http://docs.oasis-open.org/odata/ns/edm" Namespace="{{schema.namespace}}">
-				{% for entity in schema.entities %}
-				{% include 'django_odata/metadata.entity.xml' %}
-				{% endfor %}
-			</Schema>
-		{% endfor %}
+		<Schema xmlns="http://docs.oasis-open.org/odata/ns/edm" Namespace="{{namespace}}">
+			{% for entity in entities %}
+			{% include 'django_odata/metadata.entity.xml' %}
+			{% endfor %}
+		</Schema>
+		<Schema xmlns="http://docs.oasis-open.org/odata/ns/edm" Namespace="ODataWebExperimental.{{namespace}}">
+			<EntityContainer xmlns:p4="http://schemas.microsoft.com/ado/2009/02/edm/annotation" Name="{{namespace}}Entities" p4:LazyLoadingEnabled="true">
+			
+			</EntityContainer>
+		</Schema>
 	</edmx:DataServices>
 </edmx:Edmx>
