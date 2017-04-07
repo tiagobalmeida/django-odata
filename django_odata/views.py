@@ -35,13 +35,10 @@ def metadata(request):
   	current_app, django_models)
   #pdb.set_trace()
   metadata_ctx = {
-    'schemas': [
-      {
-        'namespace': 'django',
-        'entities': metadata_schema.entities,
-        'associations': metadata_schema.associations,
-      }
-    ]
+	  'namespace': 'django',
+	  'entities': metadata_schema.entities,
+	  'associations': metadata_schema.associations,
+	  'entitysets': metadata_schema.entitysets 
   }
   return TemplateResponse(request, 
     'django_odata/metadata.xml',
