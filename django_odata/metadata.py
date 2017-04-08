@@ -58,6 +58,12 @@ class ODataEntity(object):
         self.key_name = 'id' #TODO-V2 support other keys
 
 
+class ODataEntitySet(object):
+    def __init__(self, odata_entity):
+        self.name = odata_entity.name # TODO: assume set name = entity name
+        self.entity = odata_entity
+
+
 def get_django_model_by_name_for_app(app_name, model_name):
     return apps.get_model(app_name, model_name)
 
@@ -81,7 +87,8 @@ def build_sets(django_models, odata_entities):
     For now we assume the sets have the same name as the entity
     on a future revision we should have a configurable mapping.
     """
-    return []
+    entitysets = list(map(lambda ent:ODataEntitySet(ent), odata_entities))
+    return entitysets
 
 
 def build_associations(django_models, odata_entities):
