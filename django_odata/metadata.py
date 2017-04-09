@@ -44,6 +44,7 @@ class ODataEntityField(object):
             # self.related_model._meta.app_label: 'e.g. webapp' 
             # and self.related_model._meta.label: 'e.g. webapp.Customer'
             self.many = django_field.one_to_one or django_field.many_to_many
+        self.django_field = django_field
 
 
 class ODataEntity(object):

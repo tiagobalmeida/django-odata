@@ -1,7 +1,14 @@
 Resources
 http://services.odata.org/validation/validation.htm#
 
+http://services.odata.org/V4/Northwind/Northwind.svc/Categories(1)
+
+http://services.odata.org/V4/Northwind/Northwind.svc/Categories?$top=3
 
 
 metadata navigation property should have the Partner attribute
 http://docs.oasis-open.org/odata/odata/v4.0/errata03/os/complete/part3-csdl/odata-v4.0-errata03-os-part3-csdl-complete.html#_Toc453752541
+
+
+metadata - do we need the navigationpropertybinding for every navigation?
+http://docs.oasis-open.org/odata/odata/v4.0/errata03/os/complete/part3-csdl/odata-v4.0-errata03-os-part3-csdl-complete.html#_Element_edm:EntitySet
