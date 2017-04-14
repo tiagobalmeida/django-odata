@@ -95,7 +95,18 @@ class ODataV4JSONSerializer(object):
         """
         return 'TODO'
 
-    
+    @staticmethod
+    def _entity_to_json(metadata, entity):
+        """
+        Converts an entity into a json string
+        """
+        result = {}
+        for f in metadata.fields:
+            result[f.name] = entity.__getattribute__(f.name) # TODO Serialize based on type
+        return json.dumps(result)
+
+
+
     def entity_to_json(self):
         """
         Are we returning an entity or an entity set?
@@ -108,11 +119,31 @@ class ODataV4JSONSerializer(object):
         meta = metadata.get_odata_entity_by_model_name(app, model_name)
         # We need to map each field of the meta to the obj.
         # meta is an instande of ODataEntity
-        result = {}
+        result = ODataV4JSONSerializer._entity_to_json(meta, obj)
         result['@odata.context'] = self.entity_odata_context(model_name)
-        for f in meta.fields:
-            result[f.name] = obj[f.name] # TODO Serialize based on type
-        return json.dump(result)
+        return json.dumps(result)
+
+
+    def entityset_to_json(self):
+        entities_serialized = ""
+        app = 'webapp' # TODO!
+        # Get the model name of this object 
+        model_name = "Tag" #TODO
+        meta = metadata.get_odata_entity_by_model_name(app, model_name)
+        q = self.django_query
+        def _serialize_entity(entity):
+            return ODataV4JSONSerializer._entity_to_json(meta, entity) 
+        entities = list(q)
+        #entities_serialized = []
+        #for e in entities:
+        #    print(type(e))
+        #    entities_serialized.append(_serialize_entity(e))
+        entities_serialized = list(map(_serialize_entity, entities))
+        import functools as f
+        entities_serialized = f.reduce(lambda x,y: x + ',' + y, entities_serialized)
+        
+        return entities_serialized
+               
 
 
     def to_json(self):
@@ -120,7 +151,13 @@ class ODataV4JSONSerializer(object):
         Are we returning an entity or an entity set?
         TODO we assume an entity for now.
         """
-        return self.entity_to_json()
+        q = self.django_query
+        if len(q) == 0:
+            pass #TODO 404
+        elif len(q) == 1:
+            return self.entity_to_json()
+        else:
+            return self.entityset_to_json()
 
 
 class OrmQueryResult(object):
@@ -131,5 +168,6 @@ class OrmQueryResult(object):
         """
         Serializes the query result according to format
         """
-        serialzer = ODataV4JSONSerializer.from_django_query() # todo
-        return pprint.pprint(self._django_query)
+        serializer = ODataV4JSONSerializer.from_django_query(self._django_query) 
+        return serializer.to_json()
+        #return pprint.pprint(self._django_query)

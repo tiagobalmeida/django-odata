@@ -64,7 +64,7 @@ class OrmQuery(object):
     Returns an object with the result that knows how to 
       serialize itself.
     """
-    if query_options:
+    if query_options and query_options.has_filter():
       self._dj_query = set_filter(self._dj_query,
         query_options.filter())            
     return OrmQueryResult(self._dj_query) # TODO query_options?

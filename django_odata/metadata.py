@@ -1,7 +1,7 @@
 import pdb
 import django.db.models as models
 from django.apps import apps
-import django_odata.odata_to_django as o2d
+#import django_odata.odata_to_django as o2d
 
 
 def _map_django_type_to_odata(dj_field):

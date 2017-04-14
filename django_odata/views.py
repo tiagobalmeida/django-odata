@@ -88,16 +88,16 @@ def handle_get_request(request, resource_path, query_options):
     resource_path, query_options)
   orm_query = OrmQuery.from_resource_path(resource_path)
   result = orm_query.execute(query_options)
-  return result.serialize(query_options.format)
+  return HttpResponse(result.serialize(query_options.format))
 
 
 
-def handle_request(request): # type: (Object) -> Object
+def handle_request(request, odata_path): # type: (Object) -> Object
   """
   Handles all requests and delegates on sub methods based on the http
   method.
   """
-  rp = ResourcePath(request.path_info)
+  rp = ResourcePath(odata_path)
   q  = QueryOptions(request.GET)
   if not rp.statically_valid():
     return HttpResponse(status=404)
