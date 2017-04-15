@@ -13,6 +13,9 @@ from django.core.serializers.python import Serializer
 from django.core.serializers.json import DjangoJSONEncoder
 
 
+# TODO: _entity_to_json should be called (django model) instance_to_json
+
+
 class GenericOdataJsonSerializer(object):
 	@staticmethod
 	def serialize(obj):
@@ -69,6 +72,7 @@ class OdataJsonSerializer(Serializer):
         return super(Serializer, self).getvalue()
 
 
+
 class ODataV4JSONSerializer(object):
     """
     For entitysets we need to return an object with
@@ -95,16 +99,36 @@ class ODataV4JSONSerializer(object):
         """
         return 'TODO'
 
+
+    def entityset_odata_context(self, model_name):
+        """
+        Needs to return a string with the value of odata.context property when 
+        an entity set is returned.
+        e.g.
+        "http://services.odata.org/V4/Northwind/Northwind.svc/$metadata#Employees"
+        """
+        return 'TODO'
+
+
     @staticmethod
     def _entity_to_json(metadata, entity):
         """
         Converts an entity into a json string
         """
+        result = ODataV4JSONSerializer._django_model_instance_to_dict(metadata, entity)
+        return json.dumps(result)
+
+
+    @staticmethod
+    def _django_model_instance_to_dict(metadata, entity):
+        """
+        Converts a Django model instance into a dict with only the fields specified in the
+        metadata and with each value already serialized
+        """
         result = {}
         for f in metadata.fields:
             result[f.name] = entity.__getattribute__(f.name) # TODO Serialize based on type
-        return json.dumps(result)
-
+        return result
 
 
     def entity_to_json(self):
@@ -128,21 +152,19 @@ class ODataV4JSONSerializer(object):
         entities_serialized = ""
         app = 'webapp' # TODO!
         # Get the model name of this object 
-        model_name = "Tag" #TODO
+        model_name = "Tag" # TODO
         meta = metadata.get_odata_entity_by_model_name(app, model_name)
         q = self.django_query
-        def _serialize_entity(entity):
-            return ODataV4JSONSerializer._entity_to_json(meta, entity) 
-        entities = list(q)
-        #entities_serialized = []
-        #for e in entities:
-        #    print(type(e))
-        #    entities_serialized.append(_serialize_entity(e))
-        entities_serialized = list(map(_serialize_entity, entities))
-        import functools as f
-        entities_serialized = f.reduce(lambda x,y: x + ',' + y, entities_serialized)
-        
-        return entities_serialized
+        def _instance_to_dict(django_model_instance):
+            return ODataV4JSONSerializer._django_model_instance_to_dict(meta,
+                django_model_instance) 
+        instances = list(q) # list of django model instances
+        entities = list(map(_instance_to_dict, instances))
+        result = {
+            '@odata.context': self.entityset_odata_context(model_name),
+            'value' : entities
+        }
+        return json.dumps(result)
                
 
 

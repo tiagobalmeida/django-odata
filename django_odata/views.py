@@ -64,6 +64,7 @@ def root_get_response(request, query_options):
     content_type='application/json')
 
 
+
 def service_root(request):
   """
   Handles requests to the root of the service.
@@ -71,6 +72,7 @@ def service_root(request):
   q  = urlparser.QueryOptions(request.GET)
   if request.method == 'GET':
     return root_get_response(request, q)
+
 
 
 def handle_get_request(request, resource_path, query_options):
@@ -88,7 +90,13 @@ def handle_get_request(request, resource_path, query_options):
     resource_path, query_options)
   orm_query = OrmQuery.from_resource_path(resource_path)
   result = orm_query.execute(query_options)
-  return HttpResponse(result.serialize(query_options.format))
+  return HttpResponse(result.serialize(query_options.format),
+    content_type=
+      'application/json;'
+      'odata.metadata=minimal;'
+      'odata.streaming=true;'
+      'IEEE754Compatible=false;'
+      'charset=utf-8')
 
 
 
