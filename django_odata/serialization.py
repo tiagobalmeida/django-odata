@@ -150,7 +150,8 @@ class ODataV4JSONSerializer(object):
 
     def entityset_to_json(self):
         entities_serialized = ""
-        app = 'webapp' # TODO!
+        # Change this logic to support MULTIPLE_APPS
+        app = djsettings.DJANGO_ODATA['app']
         # Get the model name of this object 
         model_name = "Tag" # TODO
         meta = metadata.get_odata_entity_by_model_name(app, model_name)
