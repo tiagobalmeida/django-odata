@@ -99,18 +99,34 @@ def handle_get_request(request, resource_path, query_options):
       'charset=utf-8')
 
 
+def handle_post_request(request, resource_path, query_options):
+  # type: (object, ResourcePath, QueryOptions) -> object
+  """
+  Handles POST requests which creates objects.
+  The request must be targetting a collection, must contain a well-formed
+  entity in the body .
+  For info on what this should comply with, read:
+  http://www.odata.org/getting-started/basic-tutorial/
+
+  """
+  rp = ResourcePath(resource_path)
+  if rp.addresses_collection
+
 
 def handle_request(request, odata_path): # type: (Object) -> Object
-  """
-  Handles all requests and delegates on sub methods based on the http
-  method.
-  """
-  rp = ResourcePath(odata_path)
-  q  = QueryOptions(request.GET)
-  if not rp.statically_valid():
-    return HttpResponse(status=404)
-  if request.method == 'GET':
-    return handle_get_request(request, rp, q)
-  # TODO non get requests
-  pass
-  return HttpResponseNotAllowed(['GET']) # only allow gets for now
+    """
+    Handles all requests and delegates on sub methods based on the http
+    method.
+    """
+    rp = ResourcePath(odata_path)
+    q  = QueryOptions(request.GET)
+    if not rp.statically_valid():
+        return HttpResponse(status=404)
+    if request.method == 'GET':
+        return handle_get_request(request, rp, q)
+    elif request.method == 'DELETE':
+        return handle_delete_request(request, rp, q)
+    elif request.method == 'PATCH':
+        return handle_patch_request(request, rp, q)
+    # TODO other methods
+    return HttpResponseNotAllowed(['GET','DELETE','PATCH'])

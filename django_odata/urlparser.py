@@ -10,7 +10,12 @@ import re
 from .filterparser import Constraint, BinaryOperator
 from .filterparser import parse as filter_parser
 
+
 class ResourcePath(object):
+  """
+  ResourcePath represents anything in the url after the service endpoint.
+  This can be an entityset or an entity.
+  """
   def __init__(self, string):
     self._resource_path = string
     self._components = False

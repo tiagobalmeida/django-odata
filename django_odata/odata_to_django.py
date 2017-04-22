@@ -95,7 +95,7 @@ class OrmQuery(object):
     if len(components) > 0:
       root_model_name = model_from_external_name(
         components[0].collection_name())
-    # TODO: deal with multiple apps
+    # TODO MULTIPLE_APPS deal with multiple apps
     app = djsettings.DJANGO_ODATA['app']
     root_model = apps.get_model(app, root_model_name)        
     dj_query = root_model.objects.all()
