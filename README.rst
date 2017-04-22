@@ -4,36 +4,35 @@ Django-OData
 
 Django-Odata exposes your models via the OData V4 protocol.
 
-OData is an open protocol built on top of HTTP that allows full
- CRUD of remote objects as well as a powerfull query language.
+OData is an open protocol built on top of HTTP that allows full CRUD of remote objects as well as a powerfull query language.
 
 This project is meant to be a plug and play Django application. 
 You install it on your Django app and it will automagically provide
 an odata endpoint to interact with your Django models instances.
 
 Project status:
-- Under development. Delete and update functionality is not yet implemented.
-- $filter of entity sets seems to work and passes basic unit tests but a lot more work is still required
-- $top and $skip are working.
-- Only basic data types are implemented (integers/strings) no support yet for dates and more advanced ones like Geo coordinates.
-- Reading an entity is working but requires more tests.
+ - Under development. Delete and update functionality is not yet implemented.
+ - $filter of entity sets seems to work and passes basic unit tests but a lot more work is still required
+ - $top and $skip are working.
+ - Only basic data types are implemented (integers/strings) no support yet for dates and more advanced ones like Geo coordinates.
+ - Reading an entity is working but requires more tests.
 
 
 Roadmap
 --------
 
 v0.9: 
-- Full OData V4 support (read/write) with minimal metadata. 
-- No Function imports. 
-- Support for exposing models of one django app only (not multiple apps' models under the same endpoint)
+ - Full OData V4 support (read/write) with minimal metadata. 
+ - No Function imports. 
+ - Support for exposing models of one django app only (not multiple apps' models under the same endpoint)
 
 
 v1.0:
-- Support for configuring which models are readable and which are writable by allowing a class to be specified by the end user as the authorizer of those operations.
+ - Support for configuring which models are readable and which are writable by allowing a class to be specified by the end user as the authorizer of those operations.
 
 
 v1.1:
-- Support for multiple django apps under the same endpoint.
+ - Support for multiple django apps under the same endpoint.
 
 
 Things this project will probably never support:
@@ -43,9 +42,9 @@ OData V2/V3 as this requires implementing serialization into XML. V2 is also mor
 Quick start for django users
 ------------------------------
 1. Install it::
-	```
+
 	pip install django-odata
-	```
+
 
 2. Add "django_odata" to your INSTALLED_APPS setting like this::
 
@@ -66,6 +65,7 @@ Quick start for django users
 
 Quick start for django-odata developers
 ------------------------------------------
+
 ```
 git clone https://github.com/jumpifzero/django-odata.git
 cd django-odata
