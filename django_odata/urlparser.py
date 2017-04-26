@@ -14,7 +14,7 @@ from .filterparser import parse as filter_parser
 class ResourcePath(object):
   """
   ResourcePath represents anything in the url after the service endpoint.
-  This can be an entityset or an entity.
+  This can address an entityset or an entity.
   """
   def __init__(self, string):
     self._resource_path = string
@@ -33,7 +33,8 @@ class ResourcePath(object):
 
   def addresses_collection(self): # type: () -> bool
     "Checks if the whole resource path is addressing a collection."
-    pass
+    last = self._components[-1]
+    return not last.has_key()
 
   def addresses_entity_or_property(self): # type: () -> bool
     """
