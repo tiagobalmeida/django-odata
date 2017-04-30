@@ -52,7 +52,7 @@ class Number(TestModel):
 # --------------------
 # Northwind model
 class CustomerDemographic(TestModel):
-	CustomerDesc = models.CharField()
+	CustomerDesc = models.CharField(max_length=40)
 	Customers = models.ManyToManyField('Customer', 
 		related_name='CustomerDemographics')
 
