@@ -33,7 +33,7 @@ class ResourcePath(object):
 
   def addresses_collection(self): # type: () -> bool
     "Checks if the whole resource path is addressing a collection."
-    last = self._components[-1]
+    last = self.components()[-1]
     return not last.has_key()
 
   def addresses_entity_or_property(self): # type: () -> bool

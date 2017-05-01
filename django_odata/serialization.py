@@ -9,6 +9,7 @@
 import json
 import pprint
 import django_odata.metadata as metadata
+from django.conf import settings as djsettings
 from django.core.serializers.python import Serializer
 from django.core.serializers.json import DjangoJSONEncoder
 
@@ -116,7 +117,7 @@ class ODataV4JSONSerializer(object):
         Converts an entity into a json string
         """
         result = ODataV4JSONSerializer._django_model_instance_to_dict(metadata, entity)
-        return json.dumps(result)
+        return result
 
 
     @staticmethod
@@ -136,7 +137,7 @@ class ODataV4JSONSerializer(object):
         Are we returning an entity or an entity set?
         TODO we assume an entity for now.
         """
-        app = 'webapp' # TODO!
+        app = djsettings.DJANGO_ODATA['app']
         obj = self.django_query.get()
         # Get the model name of this object 
         model_name = obj.__class__.__name__ # TODO

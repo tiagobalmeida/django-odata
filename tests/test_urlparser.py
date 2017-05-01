@@ -39,8 +39,8 @@ class ResourcePathTestCase(TestCase):
         col_path = urlparser.ResourcePath('Collection')
         self.assertEquals(len(col_path.components()), 1)
         self.assertTrue(col_path.statically_valid())
-        #self.assertTrue(col_path.addresses_collection())
-        #self.assertFalse(col_path.addresses_entity_or_property())
+        self.assertTrue(col_path.addresses_collection())
+        self.assertFalse(col_path.addresses_entity_or_property())
 
         ent_path = urlparser.ResourcePath('Collection(2)') 
         self.assertEquals(len(ent_path.components()), 1)

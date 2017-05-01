@@ -21,10 +21,10 @@ from django.core.serializers.json import DjangoJSONEncoder
 from .odata import *
 from .urlparser import ResourcePath, QueryOptions
 from .odata_to_django import *
-from .serialization import GenericOdataJsonSerializer
 import django_odata.odata_to_django as o2d
 import django_odata.urlparser as urlparser
 import django_odata.metadata
+import django_odata.serialization as serialization
 
 
 def metadata(request):
@@ -61,7 +61,7 @@ def root_get_response(request, query_options):
     #pdb.set_trace()
     response_content = root_response_data
     return HttpResponse(
-        GenericOdataJsonSerializer.serialize(response_content),
+        serialization.GenericOdataJsonSerializer.serialize(response_content),
         content_type='application/json')
 
 
@@ -108,19 +108,31 @@ def handle_post_request(request, resource_path, query_options):
     entity in the body .
     For info on what this should comply with, read:
     http://www.odata.org/getting-started/basic-tutorial/
-
     """
     meta = django_odata.metadata
     current_app = djsettings.DJANGO_ODATA['app'] # MULTIPLE_APPS
-    rp = ResourcePath(resource_path)
-    if rp.addresses_collection():
-        req_body = sjson.loads(request.POST)
-        collection = rp.components[0].collection_name()
+    if resource_path.addresses_collection():
+        req_body_json = sjson.loads(request.body.decode('utf-8'))
+        collection = resource_path.components()[0].collection_name()
         # TODO: I'm not sure we can create entities by targetting entitysets 
         # via navigations. For the moment assuming the entityset is the
         # first and only component in the path.
         model = meta.get_django_model_by_name_for_app(current_app, collection)
-        # TODO: Create an entity. address_collection is dummy
+        new_instance = model(**req_body_json)
+        new_instance.save()
+        # Serialize the new_instance and send it back. To do it, we build a query
+        # for this specific object and serialize it the same way as the get
+        # request. PERFORMANCE: Do not do a second query.
+        query = model.objects.filter(id=new_instance.id)
+        response_body = serialization.OrmQueryResult(query).serialize()
+        return HttpResponse(response_body, 
+            status=201,
+            content_type=
+                'application/json;'
+                'odata.metadata=minimal;'
+                'odata.streaming=true;'
+                'IEEE754Compatible=false;'
+                'charset=utf-8')
     else:
         return HttpResponseBadRequest()
 
@@ -140,5 +152,7 @@ def handle_request(request, odata_path): # type: (Object) -> Object
         return handle_delete_request(request, rp, q)
     elif request.method == 'PATCH':
         return handle_patch_request(request, rp, q)
+    elif request.method == 'POST':
+        return handle_post_request(request, rp, q)        
     # TODO other methods
     return HttpResponseNotAllowed(['GET','DELETE','PATCH'])

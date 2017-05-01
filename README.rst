@@ -80,3 +80,5 @@ Changes that need to be done are marked with the string TODO
 The tag MULTIPLE_APPS marks changes for version 2 when we want
 	to support exposing models from multiple django applications.
 
+The tag PERFORMANCE marks future changes so that it performs faster.
+
