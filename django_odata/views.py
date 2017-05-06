@@ -137,6 +137,41 @@ def handle_post_request(request, resource_path, query_options):
         return HttpResponseBadRequest()
 
 
+
+def handle_delete_request(request, resource_path, query_options):
+    # type: (object, ResourcePath, QueryOptions) -> object
+    """
+    Handles DELETE requests which deletes objects.
+    The request must be targetting an entity, must contain a well-formed
+    entity in the body .
+    For info on what this should comply with, read:
+    http://www.odata.org/getting-started/basic-tutorial/
+    """
+    meta = django_odata.metadata
+    current_app = djsettings.DJANGO_ODATA['app'] # MULTIPLE_APPS
+    if resource_path.addresses_entity_or_property():
+        last_component = resource_path.components()[-1]
+        components = resource_path.components()
+        collection_name = last_component.collection_name()
+        # Translate external collection name to model name
+        collection_name = o2d.model_from_external_name(collection_name)
+        model = meta.get_django_model_by_name_for_app(current_app, 
+            collection_name)
+        try:
+            instance = model.objects.get(pk=last_component.key())
+            instance.delete()
+        except model.DoesNotExist as e:
+            raise e # TODO
+        # 
+        return HttpResponse('', 
+            status=204,
+            content_type=
+                'IEEE754Compatible=false;'
+                'charset=utf-8')
+    else:
+        return HttpResponseBadRequest()
+
+
 def handle_request(request, odata_path): # type: (Object) -> Object
     """
     Handles all requests and delegates on sub methods based on the http

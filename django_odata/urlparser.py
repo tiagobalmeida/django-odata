@@ -41,7 +41,7 @@ class ResourcePath(object):
     Checks if the whole resource path is addressing an entity
     or a property of an entity.
     """
-    pass
+    return not self.addresses_collection()
 
 
 def compile_col_regex():

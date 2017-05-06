@@ -114,7 +114,7 @@ class OrmQueryTestCase(TestCase):
   	app_name = 'tests'
   	models_names_lst = list(
   		odata2django.get_app_models_names(app_name))
-  	self.assertEquals(len(models_names_lst),6)
+  	self.assertEquals(len(models_names_lst),8)
   	models_set = set(models_names_lst)
   	self.assertTrue('Post' in models_set)
   	self.assertTrue('Tag' in models_set)
