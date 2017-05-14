@@ -106,6 +106,7 @@ def handle_post_request(request, resource_path, query_options):
     Handles POST requests which creates objects.
     The request must be targetting a collection, must contain a well-formed
     entity in the body .
+
     For info on what this should comply with, read:
     http://www.odata.org/getting-started/basic-tutorial/
     """
@@ -113,9 +114,11 @@ def handle_post_request(request, resource_path, query_options):
     current_app = djsettings.DJANGO_ODATA['app'] # MULTIPLE_APPS
     if resource_path.addresses_collection():
         req_body_json = sjson.loads(request.body.decode('utf-8'))
+        # TODO: malformed json
         collection = resource_path.components()[0].collection_name()
-        # TODO: I'm not sure we can create entities by targetting entitysets 
-        # via navigations. For the moment assuming the entityset is the
+        # TODO: A successful POST request to a navigation property's references 
+        # collection adds a relationship to an existing entity. 
+        # For the moment assuming the entityset is the
         # first and only component in the path.
         model = meta.get_django_model_by_name_for_app(current_app, collection)
         new_instance = model(**req_body_json)
@@ -135,6 +138,49 @@ def handle_post_request(request, resource_path, query_options):
                 'charset=utf-8')
     else:
         return HttpResponseBadRequest()
+
+
+
+def handle_patch_or_put_request(request, resource_path, query_options):
+    # type: (object, ResourcePath, QueryOptions) -> object
+    """
+    Handles requests to update entities. (Method PATCH or PUT)
+
+    For info on what this should comply with, read:
+    http://www.odata.org/getting-started/basic-tutorial/
+
+    Implementation is similar to getting an object by key but then changing
+    the fields which are present in the request json.
+    """
+    meta = django_odata.metadata
+    current_app = djsettings.DJANGO_ODATA['app'] # MULTIPLE_APPS
+    if resource_path.addresses_entity_or_property():
+        last_component = resource_path.components()[-1]
+        components = resource_path.components()
+        collection_name = last_component.collection_name()
+        # Translate external collection name to model name
+        collection_name = o2d.model_from_external_name(collection_name)
+        model = meta.get_django_model_by_name_for_app(current_app, 
+            collection_name)
+        try:
+            instance = model.objects.get(pk=last_component.key())
+            req_body_json = sjson.loads(request.body.decode('utf-8'))
+            # TODO: Handle malformed json
+            # Update every property in the instance
+            for item in req_body_json.items():
+                instance.__setattr__(item[0], item[1])
+            instance.save()
+        except model.DoesNotExist as e:
+            raise e # TODO - we should be sending a 404
+        # 
+        return HttpResponse('', 
+            status=204,
+            content_type=
+                'IEEE754Compatible=false;'
+                'charset=utf-8')
+    else:
+        return HttpResponseBadRequest()
+
 
 
 
@@ -182,12 +228,16 @@ def handle_request(request, odata_path): # type: (Object) -> Object
     if not rp.statically_valid():
         return HttpResponse(status=404)
     if request.method == 'GET':
+        # Reading entities
         return handle_get_request(request, rp, q)
     elif request.method == 'DELETE':
+        # Delete an entity
         return handle_delete_request(request, rp, q)
-    elif request.method == 'PATCH':
-        return handle_patch_request(request, rp, q)
+    elif request.method == 'PATCH' or request.method == 'PUT':
+        # Update an entity
+        return handle_patch_or_put_request(request, rp, q)
     elif request.method == 'POST':
+        # Create entity
         return handle_post_request(request, rp, q)        
     # TODO other methods
     return HttpResponseNotAllowed(['GET','DELETE','PATCH'])

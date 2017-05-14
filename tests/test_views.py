@@ -4,6 +4,7 @@
 # (C) Tiago Almeida 2017
 # ============================================================
 from django.test import Client, TestCase
+from tests.models import Tag
 import simplejson as s
 
 class PostTestCase(TestCase):
@@ -49,3 +50,29 @@ class PostDeleteTestCase(TestCase):
         response = c.delete('/Tag(1)')
         self.assertEquals(response.status_code, 204)
         self.assertEquals(len(Tag.objects.all()),0)
+
+
+class UpdateTestCase(TestCase):
+    """ 
+    Tests for updating instances  
+    """
+
+    def testUpdateNameOfTag(self):
+        # Create a tag
+        NEW_VALUE = 'changed'
+        t = Tag(name='tochange')
+        t.save()
+        # Confirm there is one Tag in the DB
+        self.assertEquals(len(Tag.objects.all()),1)
+        # Update the tag via the service
+        c = Client()
+        json_data = s.dumps({'name': NEW_VALUE})
+        response = c.patch('/Tag(1)', 
+            json_data,
+            content_type='application/json')
+        self.assertEquals(response.status_code, 204)
+        # Confirm there is still one Tag in the DB
+        self.assertEquals(len(Tag.objects.all()),1)
+        # Confirm the name was changed
+        k = Tag.objects.get(pk=1)
+        self.assertEquals(k.name, NEW_VALUE)

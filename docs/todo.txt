@@ -1,4 +1,10 @@
+TODO
+=============
+TODO: It is not possible to address an entity with quotes around the key.
+	Example: Tag("1") fails but Tag(1) works.
+
 Resources
+=============
 http://services.odata.org/validation/validation.htm#
 
 http://services.odata.org/V4/Northwind/Northwind.svc/Categories(1)
