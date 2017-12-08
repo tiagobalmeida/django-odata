@@ -1,8 +1,9 @@
 cov-core==1.15.0
 coverage==3.7.1
-Django==1.10.5
+Django
 ply==3.10
 py==1.4.32
 pytest==2.9.1
 pytest-cov==1.8.1
 pytest-django==2.9.1
+simplejson

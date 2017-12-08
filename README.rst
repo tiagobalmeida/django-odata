@@ -7,8 +7,8 @@ Django-Odata exposes your models via the OData V4 protocol.
 OData is an open protocol built on top of HTTP that allows full CRUD of remote objects as well as a powerfull query language.
 
 This project is meant to be a plug and play Django application. 
-You install it on your Django app and it will automagically provide
-an odata endpoint to interact with your Django models instances.
+You install it on your Django project and it will *automagically* provide
+an OData endpoint to interact with your Django models instances.
 
 Project status:
  - Under development. Delete and update functionality is not yet implemented.
@@ -36,7 +36,7 @@ v1.1:
 
 
 Things this project will probably never support:
-OData V2/V3 as this requires implementing serialization into XML. V2 is also more complex than V4 in many ways.
+OData V2/V3 as this requires implementing serialization into XML. V2 is also more complex than V4 in some ways.
 
 
 Quick start for django users
@@ -71,6 +71,12 @@ git clone https://github.com/jumpifzero/django-odata.git
 cd django-odata
 python3 -m venv env
 source env/bin/activate
+pip3 install -r requirements.txt
+```
+
+You can run the automated tests with
+```
+./runTests.sh
 ```
 
 About the code
