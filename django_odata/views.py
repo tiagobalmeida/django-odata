@@ -75,7 +75,6 @@ def service_root(request):
         return root_get_response(request, q)
 
 
-
 def handle_get_request(request, resource_path, query_options):
     # type: (object, ResourcePath, QueryOptions) -> object
     """
@@ -88,16 +87,15 @@ def handle_get_request(request, resource_path, query_options):
     """
     if not resource_path:
         return root_get_response(request,
-        resource_path, query_options)
+                                 resource_path, query_options)
     orm_query = OrmQuery.from_resource_path(resource_path)
     result = orm_query.execute(query_options)
     return HttpResponse(result.serialize(query_options.format),
-        content_type=
-            'application/json;'
-            'odata.metadata=minimal;'
-            'odata.streaming=true;'
-            'IEEE754Compatible=false;'
-            'charset=utf-8')
+                        content_type='application/json;'
+                        'odata.metadata=minimal;'
+                        'odata.streaming=true;'
+                        'IEEE754Compatible=false;'
+                        'charset=utf-8')
 
 
 def handle_post_request(request, resource_path, query_options):

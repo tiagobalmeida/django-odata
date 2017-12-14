@@ -18,15 +18,15 @@ from django.core.serializers.json import DjangoJSONEncoder
 
 
 class GenericOdataJsonSerializer(object):
-	@staticmethod
-	def serialize(obj):
-		"""
-		Inserts obj as the value of property "d" in an 
-		outer object and converts this to a json.
-		"""
-		wrapped = {'d':obj}
-		result = json.dumps(wrapped, separators=(',', ':'))
-		return result
+    @staticmethod
+    def serialize(obj):
+        """
+        Inserts obj as the value of property "d" in an 
+        outer object and converts this to a json.
+        """
+        wrapped = {'d':obj}
+        result = json.dumps(wrapped, separators=(',', ':'))
+        return result
 
 
 class OdataJsonSerializer(Serializer):
@@ -44,20 +44,20 @@ class OdataJsonSerializer(Serializer):
     def get_dump_object(self, obj):
         data = self._current
         if not self.selected_fields or 'id' in self.selected_fields:
-          data['id'] = obj.id
+            data['id'] = obj.id
         # Inject the odata metadata info
         data['__metadata'] = {
-          'uri': self._get_obj_uri(obj),
-          'type': self._get_obj_type(obj)
+            'uri': self._get_obj_uri(obj),
+            'type': self._get_obj_type(obj)
         }
         return data
 
     def end_object(self, obj):
         if not self.first:
-          self.stream.write(', ')
-        json.dump(self.get_dump_object(obj), self.stream,
-            cls=DjangoJSONEncoder)
-        self._current = None
+            self.stream.write(', ')
+            json.dump(self.get_dump_object(obj), self.stream,
+                      cls=DjangoJSONEncoder)
+            self._current = None
 
     def start_serialization(self):
         """
@@ -89,11 +89,10 @@ class ODataV4JSONSerializer(object):
         serializer = ODataV4JSONSerializer()
         serializer.django_query = django_query
         return serializer
-    
 
     def entity_odata_context(self, model_name):
         """
-        Needs to return a string with the value of odata.context property of
+        Needs # TODO: o return a string with the value of odata.context property of
         an entity.
         e.g.
         http://services.odata.org/V4/Northwind/Northwind.svc/$metadata#Categories/$entity
@@ -110,7 +109,6 @@ class ODataV4JSONSerializer(object):
         """
         return 'TODO'
 
-
     @staticmethod
     def _entity_to_json(metadata, entity):
         """
@@ -119,18 +117,16 @@ class ODataV4JSONSerializer(object):
         result = ODataV4JSONSerializer._django_model_instance_to_dict(metadata, entity)
         return result
 
-
     @staticmethod
     def _django_model_instance_to_dict(metadata, entity):
         """
         Converts a Django model instance into a dict with only the fields specified in the
-        metadata and with each value already serialized
+        metadata self.assertNotIn(member, container)d with each value already serialized
         """
         result = {}
         for f in metadata.fields:
             result[f.name] = entity.__getattribute__(f.name) # TODO Serialize based on type
         return result
-
 
     def entity_to_json(self):
         """
@@ -148,36 +144,33 @@ class ODataV4JSONSerializer(object):
         result['@odata.context'] = self.entity_odata_context(model_name)
         return json.dumps(result)
 
-
     def entityset_to_json(self):
         entities_serialized = ""
-        # Change this logic to support MULTIPLE_APPS
         app = djsettings.DJANGO_ODATA['app']
         # Get the model name of this object 
         model_name = "Tag" # TODO
+        import pdb
+        pdb.set_trace()
         meta = metadata.get_odata_entity_by_model_name(app, model_name)
         q = self.django_query
         def _instance_to_dict(django_model_instance):
             return ODataV4JSONSerializer._django_model_instance_to_dict(meta,
-                django_model_instance) 
-        instances = list(q) # list of django model instances
+                                                                        django_model_instance) 
+        instances = list(q)  # list of django model instances
         entities = list(map(_instance_to_dict, instances))
         result = {
             '@odata.context': self.entityset_odata_context(model_name),
-            'value' : entities
+            'value': entities
         }
         return json.dumps(result)
-               
-
 
     def to_json(self):
         """
         Are we returning an entity or an entity set?
-        TODO we assume an entity for now.
         """
         q = self.django_query
         if len(q) == 0:
-            pass #TODO 404
+            pass  # TODO 404
         elif len(q) == 1:
             return self.entity_to_json()
         else:

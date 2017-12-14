@@ -39,7 +39,7 @@ Things this project will probably never support:
 OData V2/V3 as this requires implementing serialization into XML. V2 is also more complex than V4 in some ways.
 
 
-Quick start for django users
+Quick start for django-odata users
 ------------------------------
 1. Install it::
 
@@ -55,13 +55,38 @@ Quick start for django users
 
 3. Include the polls URLconf in your project urls.py like this::
 
-    url(r'^odata/', include('django_odata.urls')),
+    path('odata/', include('django_odata.urls'))
 
 
 4. Configure it on you settings.py file.
+   Minimal configuration is a DJANGO_ODATA dict on your settings.py,
+   with an 'app' key whose value is the appname and a 'sets' key whose value
+   is a dict with all the Models to expose. Check /samples/backend/backend/settings.py for an example.
 
-5. That's it! Your project will now allow full read and write of all your models under url /odata.
+5. That's it! Your project will now allow full read and write of all your specified models under url /odata.
 
+If you want to run a sample UI5 project locally, connected to a local django-odata server, do the following:
+```
+git clone https://github.com/jumpifzero/django-odata.git
+cd django-odata
+python3 -m venv env
+source env/bin/activate
+pip3 install -r requirements.txt
+cd samples/fullstack
+# Create a resources link pointing to a local installation of openui5. For example:
+ln -s -T /home/tiago/lib/ui5/sapui5-1.40.12/resources ./resources
+# Run django-odata server
+# Run a server for the index.html
+python3 -m http.server
+# Open browser in http://localhost:8000
+# To run the backend
+# On another session
+cd samples/fullstack/backend
+python3 manage.py makemigrations
+python3 manage.py migrate
+python3 manage.py loaddata Suppliers
+```
+   
 
 Quick start for django-odata developers
 ------------------------------------------
